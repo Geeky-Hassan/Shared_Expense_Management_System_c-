@@ -3,17 +3,28 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest.h>
 
-#include <map> // TODO remove
 #include <string>
+#include <tuple>
 #include <vector>
+#include <utility>
 
+static std::pair<double, bool> find_account_balance(const std::vector<Account>& accounts,
+        const std::string& name) {
+
+    for (const auto& account : accounts) {
+        if (account.name == name) {
+            return {account.balance, true};
+        }
+    }
+    return {0.0, false};
+}
 
 TEST_CASE("calculating owed Rs of each member") {
 
     SUBCASE("given there are no members, "
             "when compute minimimum balances, "
             "the result is empty") {
-        std::vector<Account> min_balances{alt_compute_min_balances({})};
+        std::vector<Account> min_balances{compute_min_balances({})};
         CHECK(min_balances.empty());
     }
 
@@ -21,15 +32,10 @@ TEST_CASE("calculating owed Rs of each member") {
             "when compute minimum balances, "
             "Bob's minimum balance is 0.0") {
         std::vector<Account> expenses{{"Bob", 0.0}};
-        auto min_balances = alt_compute_min_balances(expenses);
-        bool found_account{false};
-        for (const auto& account : min_balances) {
-            if (account.name == "Bob") {
-                found_account = true;
-                CHECK(account.balance == 0.0);
-            }
-        }
-        CHECK(found_account);
+        const auto min_balances = compute_min_balances(expenses);
+        const auto [balance, ok] = find_account_balance(min_balances, "Bob");
+        REQUIRE(ok);
+        CHECK(balance == 0.0);
     }
 
     SUBCASE("given one member 'Bob Yays' with an expense of 6.4, "
@@ -37,15 +43,16 @@ TEST_CASE("calculating owed Rs of each member") {
             "when compute minimum balances, "
             "'Alice's minimum balance is 3.2, "
             "and 'Bob Yays's minimum balance is 0.0") {
-        std::map<std::string, double> expenses{
+        std::vector<Account> expenses{
             {"Alice", 0.0}, {"Bob Yays", 6.4}};
-        auto min_balances = compute_min_balances(expenses);
+        const auto min_balances = compute_min_balances(expenses);
 
-        REQUIRE(min_balances.find("Alice") != min_balances.end());
-        CHECK(min_balances.at("Alice") == doctest::Approx{3.2});
-        REQUIRE(min_balances.find("Bob Yays") != min_balances.end());
-        CHECK(min_balances.at("Bob Yays") == doctest::Approx{0.0});
-
+        auto [balance, ok] = find_account_balance(min_balances, "Alice");
+        REQUIRE(ok);
+        CHECK(balance == doctest::Approx{3.2});
+        std::tie(balance, ok) = find_account_balance(min_balances, "Bob Yays");
+        REQUIRE(ok);
+        CHECK(balance == doctest::Approx{0.0});
     }
 
     SUBCASE("given one member 'Alice' with an expense of 0.1, "
@@ -55,15 +62,18 @@ TEST_CASE("calculating owed Rs of each member") {
             "'Alice's minimum balance is 3.433333333333, "
             "and 'Bob's minimum balance is 0.0, "
             "and 'Charlie's minimum balance is 3.1") {
-        std::map<std::string, double> expenses{
+        std::vector<Account> expenses{
             {"Alice", 0.1}, {"Bob", 9.9}, {"Charlie", 0.6}};
         auto min_balances = compute_min_balances(expenses);
 
-        REQUIRE(min_balances.find("Alice") != min_balances.end());
-        CHECK(min_balances.at("Alice") == doctest::Approx{3.433333333333});
-        REQUIRE(min_balances.find("Bob") != min_balances.end());
-        CHECK(min_balances.at("Bob") == doctest::Approx{0.0});
-        REQUIRE(min_balances.find("Charlie") != min_balances.end());
-        CHECK(min_balances.at("Charlie") == doctest::Approx{3.1});
+        auto [balance, ok] = find_account_balance(min_balances, "Alice");
+        REQUIRE(ok);
+        CHECK(balance == doctest::Approx{3.433333333333});
+        std::tie(balance, ok) = find_account_balance(min_balances, "Bob");
+        REQUIRE(ok);
+        CHECK(balance == doctest::Approx{0.0});
+        std::tie(balance, ok) = find_account_balance(min_balances, "Charlie");
+        REQUIRE(ok);
+        CHECK(balance == doctest::Approx{3.1});
     }
 }
