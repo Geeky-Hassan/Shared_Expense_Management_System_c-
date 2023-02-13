@@ -1,11 +1,12 @@
-#include <map> // TODO remove
-#include <string>
-#include <vector>
+#include "expense_balancer.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest.h>
 
-#include "expense_balancer.h"
+#include <map> // TODO remove
+#include <string>
+#include <vector>
+
 
 TEST_CASE("calculating owed Rs of each member") {
 
