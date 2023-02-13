@@ -1,7 +1,6 @@
 #ifndef EXPENSE_BALANCER_H_INCLUDED
 #define EXPENSE_BALANCER_H_INCLUDED
 
-#include <map>
 #include <string>
 #include <vector>
 
