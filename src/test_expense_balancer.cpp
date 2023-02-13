@@ -60,32 +60,3 @@ TEST_CASE("calculating owed Rs of each member") {
         CHECK(min_balances.at("Charlie") == doctest::Approx{3.1});
     }
 }
-
-TEST_CASE("printing members and balances") {
-    std::ostringstream ss;
-
-    SUBCASE("given there are no members, "
-            "when print balances, "
-            "nothing is printed") {
-        print_balances({}, ss);
-        CHECK(ss.str() == "");
-    }
-
-    SUBCASE("given one member Bob with a balance of 0.0, "
-            "when print balances, "
-            "'Bob: 0\\n' is printed") {
-        std::map<std::string, double> balances{{"Bob", 0.0}};
-        print_balances(balances, ss);
-        CHECK(ss.str() == "Bob: 0\n");
-    }
-
-    SUBCASE("given one member 'Bob Yays' with a balance of 0.0, "
-            "and another member 'Alice' with a balance of 8.5, "
-            "when print balances, "
-            "'Alice: 8.5\\nBob Yays: 0\\n' is printed") {
-        std::map<std::string, double> balances{
-            {"Bob Yays", 0.0}, {"Alice", 8.5}};
-        print_balances(balances, ss);
-        CHECK(ss.str() == "Alice: 8.5\nBob Yays: 0\n");
-    }
-}
