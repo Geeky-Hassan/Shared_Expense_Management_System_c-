@@ -1,6 +1,6 @@
-#include <map>
-#include <sstream>
+#include <map> // TODO remove
 #include <string>
+#include <vector>
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest.h>
@@ -12,17 +12,23 @@ TEST_CASE("calculating owed Rs of each member") {
     SUBCASE("given there are no members, "
             "when compute minimimum balances, "
             "the result is empty") {
-        std::map<std::string, double> min_balances{compute_min_balances({})};
+        std::vector<Account> min_balances{alt_compute_min_balances({})};
         CHECK(min_balances.empty());
     }
 
     SUBCASE("given one member 'Bob' with an expense of 0.0, "
             "when compute minimum balances, "
             "Bob's minimum balance is 0.0") {
-        std::map<std::string, double> expenses{{"Bob", 0.0}};
-        auto min_balances = compute_min_balances(expenses);
-        REQUIRE(min_balances.find("Bob") != min_balances.end());
-        CHECK(min_balances.at("Bob") == 0.0);
+        std::vector<Account> expenses{{"Bob", 0.0}};
+        auto min_balances = alt_compute_min_balances(expenses);
+        bool found_account{false};
+        for (const auto& account : min_balances) {
+            if (account.name == "Bob") {
+                found_account = true;
+                CHECK(account.balance == 0.0);
+            }
+        }
+        CHECK(found_account);
     }
 
     SUBCASE("given one member 'Bob Yays' with an expense of 6.4, "
