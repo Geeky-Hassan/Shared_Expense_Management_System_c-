@@ -1,0 +1,102 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Member {
+    string name;
+    float balance;
+};
+
+void addMember(vector<Member>& members) {
+    string name;
+    cout << "Enter member name: ";
+    cin >> name;
+
+    Member member = {name, 0};
+    members.push_back(member);
+
+    cout << "Member added successfully." << endl;
+}
+
+void showMembers(vector<Member>& members) {
+    cout << "Members:" << endl;
+    for (const auto& member : members) {
+        cout << member.name << " (balance: " << member.balance << ")" << endl;
+    }
+}
+
+void addExpense(vector<Member>& members) {
+    string payerName;
+    float amount;
+    cout << "Enter payer name: ";
+    cin >> payerName;
+    cout << "Enter expense amount: ";
+    cin >> amount;
+
+    int numMembers = members.size();
+    float splitAmount = amount / numMembers;
+
+    for (auto& member : members) {
+        if (member.name != payerName) {
+            member.balance += splitAmount;
+        } else {
+            member.balance -= amount - splitAmount;
+        }
+    }
+
+    cout << "Expense added successfully." << endl;
+}
+
+void calculateNetBalance(vector<Member>& members) {
+    for (auto& member : members) {
+        for (auto& otherMember : members) {
+            if (member.name != otherMember.name) {
+                float amount = min(member.balance, -otherMember.balance);
+                member.balance -= amount;
+                otherMember.balance += amount;
+            }
+        }
+    }
+
+    cout << "Net balance calculated successfully." << endl;
+}
+
+int main() {
+    vector<Member> members;
+
+    while (true) {
+        cout << endl;
+        cout << "SEMS - Simple Expense Management System" << endl;
+        cout << "1. Add member" << endl;
+        cout << "2. Show members" << endl;
+        cout << "3. Add expense" << endl;
+        cout << "4. Calculate net balance" << endl;
+        cout << "5. Quit" << endl;
+        cout << "Enter choice: ";
+
+        int choice;
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addMember(members);
+                break;
+            case 2:
+                showMembers(members);
+                break;
+            case 3:
+                addExpense(members);
+                break;
+            case 4:
+                calculateNetBalance(members);
+                break;
+            case 5:
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
+}
