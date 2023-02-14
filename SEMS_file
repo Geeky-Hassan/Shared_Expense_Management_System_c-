@@ -69,7 +69,7 @@ int main() {
 
     while (true) {
         cout << endl;
-        cout << "SEMS - Simple Expense Management System" << endl;
+        cout << "SEMS - Shared Expense Management System" << endl;
         cout << "1. Add member" << endl;
         cout << "2. Show members" << endl;
         cout << "3. Add expense" << endl;
