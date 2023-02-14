@@ -36,8 +36,8 @@ void addExpense(vector<Member>& members) {
     cout << "Enter expense amount: ";
     cin >> amount;
 
-    int numMembers = members.size();
-    double splitAmount = amount / numMembers;
+    int size_tnumMembers = members.size();
+    double splitAmount = amount / size_tnumMembers;
 
     for (auto& member : members) {
         if (member.name != payerName) {
