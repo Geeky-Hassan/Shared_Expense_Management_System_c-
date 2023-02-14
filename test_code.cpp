@@ -1,131 +1,146 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
-void add_members(vector<string> &member_names);
-void add_expense(vector<double> &balances, int num_members, const vector<string> &member_names);
-void print_balances(const vector<string> &member_names, const vector<double> &balances);
-void calculate_net_balances(const vector<string> &member_names, const vector<double> &balances);
+struct Member {
+    string name;
+    double balance;
+};
 
-int main()
-{
-    vector<string> member_names;
-    vector<double> balances;
+void addMember(vector<Member>& members) {
+    string name;
+    cout << "Enter member name: ";
+    cin >> name;
 
-    add_members(member_names);
-    add_expense(balances, member_names.size(), member_names);
-    print_balances(member_names, balances);
-    calculate_net_balances(member_names, balances);
+    Member member = {name, 0.0};
+    members.push_back(member);
 
-    return 0;
+    cout << "Member added successfully." << endl;
 }
 
-void add_members(vector<string> &member_names)
-{
-    cout << "Enter member names (type finish when you are done):\n";
-    while (true)
-    {
-        string name;
-        cout << "Member " << member_names.size() + 1 << ": ";
-        cin >> name;
-        if (name == "finish")
-        {
-            break;
-        }
-        member_names.push_back(name);
+void showMembers(const vector<Member>& members) {
+    cout << "Members:" << endl;
+    for (const auto& member : members) {
+        cout << member.name << " (balance: " << member.balance << ")" << endl;
     }
 }
 
-void add_expense(vector<double> &balances, int num_members, const vector<string> &member_names)
-{
+void addExpense(vector<Member>& members) {
+    string payerName;
     double amount;
-    string payer;
-
-    cout << "Enter expense details (payer name): ";
-    cin >> payer;
-    cout << "Enter expense details (amount): ";
+    cout << "Enter payer name: ";
+    cin >> payerName;
+    cout << "Enter expense amount: ";
     cin >> amount;
 
-    if (balances.size() == 0)
-    {
-        balances.resize(num_members);
-    }
+    int numMembers = members.size();
+    double splitAmount = amount / numMembers;
 
-    double per_member_amount = amount / num_members;
-
-    for (int i = 0; i < num_members; i++)
-    {
-        if (member_names[i] == payer)
-        {
-            balances[i] += amount - per_member_amount;
-        }
-        else
-        {
-            balances[i] += per_member_amount;
+    for (auto& member : members) {
+        if (member.name != payerName) {
+            member.balance += splitAmount;
+        } else {
+            member.balance -= amount - splitAmount;
         }
     }
+
+    cout << "Expense added successfully." << endl;
 }
 
-void print_balances(const vector<string> &member_names, const vector<double> &balances)
-{
-    cout << "Balances:\n";
-    for (int i = 0; i < member_names.size(); i++)
-    {
-        cout << member_names[i] << ": " << balances[i] << endl;
-    }
-}
-
-void calculate_net_balances(const vector<string> &member_names, const vector<double> &balances)
-{
-    vector<double> net_balances(balances.size(), 0.0);
-
-    for (int i = 0; i < member_names.size(); i++) {
-    for (int j = 0; j < member_names.size(); j++) {
-        if (i != j) {
-            double borrowed_amount = balances[j] - balances[i];
-            if (borrowed_amount > 0) {
-                net_balances[i] -= borrowed_amount;
-                net_balances[j] += borrowed_amount;
-            }
-        }
-    }
-}
-
-cout << "Net balances:\n";
-for (int i = 0; i < member_names.size(); i++) {
-    cout << member_names[i] << " owes ";
-
-    double min_net_balance = 0.0;
-    double max_net_balance = 0.0;
-    int min_index = -1;
-    int max_index = -1;
-
-    for (int j = 0; j < member_names.size(); j++) {
-        if (i != j) {
-            double net_balance = net_balances[j] - net_balances[i];
-            if (net_balance > max_net_balance) {
-                max_net_balance = net_balance;
-                max_index = j;
-            } else if (net_balance < min_net_balance) {
-                min_net_balance = net_balance;
-                min_index = j;
+void calculateNetBalance(vector<Member>& members) {
+    for (auto& member : members) {
+        for (auto& otherMember : members) {
+            if (member.name != otherMember.name) {
+                double amount = min(member.balance, -otherMember.balance);
+                member.balance -= amount;
+                otherMember.balance += amount;
             }
         }
     }
 
-    if (max_net_balance == 0 && min_net_balance == 0) {
-        cout << "nothing." << endl;
-    } else if (max_net_balance >= -min_net_balance) {
-        cout << member_names[max_index] << " " << abs(min_net_balance) << endl;
-        net_balances[i] -= min_net_balance;
-        net_balances[max_index] += min_net_balance;
-    } else {
-        cout << member_names[min_index] << " " << max_net_balance << endl;
-        net_balances[i] += max_net_balance;
-        net_balances[min_index] -= max_net_balance;
+    cout << "Net balance calculated successfully." << endl;
+}
+
+void showMinBalances(const vector<Member>& members) {
+    vector<Member> expenses = members;
+    sort(expenses.begin(), expenses.end(), [](const Member& a, const Member& b) {
+        return a.balance < b.balance;
+    });
+
+    vector<Member> creditors;
+    vector<Member> debtors;
+
+    for (const auto& expense : expenses) {
+        if (expense.balance > 0) {
+            creditors.push_back(expense);
+        } else if (expense.balance < 0) {
+            debtors.push_back(expense);
+        }
+    }
+
+    vector<pair<string, double>> minBalances;
+
+    for ( auto& creditor : creditors) {
+        for ( auto& debtor : debtors) {
+            double amount = min(creditor.balance, -debtor.balance);
+            if (amount > 0) {
+                creditor.balance -= amount;
+                debtor.balance += amount;
+                minBalances.push_back({creditor.name + " -> " + debtor.name, amount});
+                if (creditor.balance == 0) {
+                    break;
+                }
+            }
+        }
+    }
+
+    cout << "Minimum balances per person:" << endl;
+    for (const auto& minBalance : minBalances) {
+        cout << minBalance.first << " (balance: " << minBalance.second << ")" << endl;
     }
 }
+
+
+int main() {
+    vector<Member> members;
+
+    while (true) {
+        cout << endl;
+        cout << "SEMS - Shared Expense Management System" << endl;
+        cout << "1. Add member" << endl;
+        cout << "2. Show members" << endl;
+        cout << "3. Add expense" << endl;
+        cout << "4. Calculate net balance" << endl;
+        cout << "5. Show minimum balances" << endl;
+        cout << "6. Quit" << endl;
+        cout << "Enter choice: ";
+
+        int choice;
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                addMember(members);
+                break;
+            case 2:
+                showMembers(members);
+                break;
+            case 3:
+                addExpense(members);
+                break;
+            case 4:
+                calculateNetBalance(members);
+                break;
+            case 5:
+                showMinBalances(members);
+                break;
+            case 6:
+                return 0;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+        }
+    }
 }
