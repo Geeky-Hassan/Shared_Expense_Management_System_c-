@@ -36,4 +36,4 @@ against all other members separately
 ![pf project output](https://user-images.githubusercontent.com/93768672/218338108-589658be-606d-44e9-819a-2fffc0b79cf0.png)
 
 # My Thoughts:
-I have coded first 3 parts but can't able to get desired result.. You can check my code,fix it. I am new in c++ programming.
+I have coded first 3 parts but can't able to get desired result.. You can check my code and fork the repo/commit it.
