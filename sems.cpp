@@ -8,6 +8,9 @@ using namespace std;
 struct owing {
     string member_name; 
     double owe_amount;
+    int paying_id;
+    string paying_name;
+    double paying_amount;
 };
 
 struct member {
@@ -18,7 +21,6 @@ struct member {
 
 void add_members(vector<member> &m);
 void add_expenses(vector<member> &m);
-//void do_expenses(vector<member> &m, string payer_name, double amount, int num_expenses);
 void read_user(vector<member> &m, string user);
 //void net_balance(vector<member> &m);
 
@@ -68,37 +70,30 @@ void add_expenses(vector<member> &m) {
         cin >> payer_name;
         cout << "Enter Payer Amount" << "(" << i+1 << ")\n";
         cin >> amount;
+        
+        double share = amount / m.size();
+        vector<owing> d_owe(m.size());
+        for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
+            int index = it - m.begin();
+            if (it->name == payer_name) {
+                for(int j=0; j<m.size(); j++) {
+                    if (m[j].name == payer_name) {
+                       // m[j].owe[j].paying_amount -= share;
+                    }else{
 
-        //do_expenses(m, payer_name, amount, num_expenses);
-    double share = amount / m.size();
-    int length = m.size();
+                        d_owe[j].paying_id = j;
+                        d_owe[j].paying_name = payer_name;
+                        d_owe[j].paying_amount = share;
+                        m[j].owe.push_back(d_owe[j]);
 
-    //cout << length << "\n";
-
-
-    vector<owing> owe(num_expenses);
-    for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
-
-        int index = it - m.begin();
-
-        if (it->name == payer_name) {
-            for(int j=0; j<num_expenses-1; j++) {
-                //it[index].owe[j].owe_amount += share;
-                owe[j].owe_amount += share;
-
-                if (m[j].name == payer_name) {
-                    continue;
+                        
+                        d_owe[j].member_name = m[j].name;
+                        d_owe[j].owe_amount += share;
+                        it->owe.push_back(d_owe[j]);                       
+                    }
                 }
-
-                owe[j].member_name = m[j].name;
-                //owe[j].owe_amount += share;
-                //it[index].owe[j].member_name = m[j].name;
-
-                it->owe.push_back(owe[j]);
             }
-        }  
-
-    }
+        }
     }
 }
 
@@ -106,90 +101,14 @@ void add_expenses(vector<member> &m) {
 
 
 void read_user(vector<member> &m, string user) {
+    cout << "Names" << "     " << "Amount" << "\n";
      for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
-        cout << it->name << "\n";
-        cout << it->amount << "\n";
-        //cout << it->owe[0].owe_amount << "\n";
         if (it->name == user) {
             int index = it - m.begin();
             for (std::vector<owing>::iterator itr = m[index].owe.begin(); itr != m[index].owe.end(); itr++){
-                cout << m[index].name;
-                cout << "==========================\n";
-                cout << itr->member_name << "\n";
-                cout << itr->owe_amount << "\n";
-                cout << "==========================\n";
+                cout << "members owing me owing details\n";
+                cout << itr->member_name << "       " << itr->owe_amount << "\n";
             }
         }
     }
 }
-
-
-
-/*
-
-void do_expenses(vector<member> &m, string payer_name, double amount, int num_expenses) {
-
-    double share = amount / m.size();
-    int length = m.size();
-
-    cout << length << "\n";
-
-
-    vector<owing> owe(num_expenses);
-    for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
-
-        int index = it - m.begin();
-
-        if (it->name == payer_name) {
-            for(int j=0; j<length; j++) {
-                //it[index].owe[j].owe_amount += share;
-                owe[j].owe_amount += share;
-
-                if (m[j].name == payer_name) {
-                    continue;
-                }
-
-                owe[j].member_name = m[j].name;
-                //owe[j].owe_amount += share;
-                //it[index].owe[j].member_name = m[j].name;
-
-                it->owe.push_back(owe[j]);
-            }
-        }  
-
-    }
-
-    for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
-        cout << it->name << "\n";
-        cout << it->amount << "\n";
-        //cout << it->owe[0].owe_amount << "\n";
-        if (it->name == "ade") {
-            int index = it - m.begin();
-            for (std::vector<owing>::iterator itr = m[index].owe.begin(); itr != m[index].owe.end(); itr++){
-                cout << m[index].name;
-                cout << "==========================\n";
-                cout << itr->member_name << "\n";
-                cout << itr->owe_amount << "\n";
-                cout << "==========================\n";
-            }
-        }
-    }
-
-*/
-
-/*
-void net_balance(vector<member> m) {
-    //cout << m;
-}7
-
-
-for (std::vector<owing>::iterator itr = m[index].owe.begin(); itr != m[index].owe.end(); itr++){
-                int i_index = itr - m[index].owe.begin();
-
-                owe[i_index].member_name = itr[i_index].member_name;
-                owe[i_index].owe_amount += share;
-
-                it->owe = owe;
-            }
-
-*/
