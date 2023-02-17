@@ -49,7 +49,7 @@ void net_balance(std::vector<member> &m, std::string name, double amount, int nu
     for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
         if (it->name == name) {
             if (it->gbese != 0) {
-                it->expenses -= it->gbese;
+                double expenses = it->gbese;
 
                 double temp = 0;
                 it->gbese -= it->expenses;
@@ -57,6 +57,7 @@ void net_balance(std::vector<member> &m, std::string name, double amount, int nu
                     it->gbese = temp;
                 }  
 
+                it->expenses -= it->gbese;
                 if (it->expenses > 0) {
                     double sh = it->expenses / num_member;
                     for (int i=0; i<m.size(); i++) {
