@@ -60,8 +60,8 @@ void net_balance(std::vector<member> &m, std::string name, double amount, int nu
                 if (it->expenses > 0) {
                     double sh = it->expenses / num_member;
                     for (int i=0; i<m.size(); i++) {
-                        if (m[i].name != name) {
-                            m[i].gbese += share;
+                        if (m[i].name != it->name) {
+                            m[i].gbese += sh;
                         }
                     }
                 }  
