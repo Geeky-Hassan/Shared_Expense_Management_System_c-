@@ -1,87 +1,169 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
-struct Member {
+// Define a struct to represent each member of the group
+struct member
+{
     string name;
-    double balance;
+    double expenses;
+    double debt;
+    vector<double> expenses_history;
+    vector<double> debt_history;
 };
+// Function to add a new member to the group
+void add_member(vector<member> &m, string name);
 
-void show_members(vector<Member>& members) {
-    for (Member& member : members) {
-        cout << member.name << ": " << member.balance << endl;
-    }
-}
+// Function to add expenses for a member
+void add_expenses(vector<member> &m, string name, double amount);
 
-void add_expense(vector<Member>& members, double total_expense, string payer_name) {
-    double split_expense = total_expense / members.size();
-    for (Member& member : members) {
-        if (member.name != payer_name) {
-            member.balance += split_expense;
-        }
+// Function to calculate the net balance for a member
+void net_balance(vector<member> &m, string name);
+
+// Function to display the expense and debt history for a member
+void history(vector<member> &m, string name);
+
+int main()
+{
+    vector<member> m;
+
+    // Get the number of members in the group from the user
+    int num_members;
+    cout << "How many members are in the group?" << endl;
+    cin >> num_members;
+
+    // Ask for the name of each member and add them to the group
+    for (int i = 0; i < num_members; i++)
+    {
+        string name;
+        cout << "Enter the name of member " << i + 1 << ":" << endl;
+        cin >> name;
+        add_member(m, name);
     }
-    for (Member& member : members) {
-        if (member.name == payer_name) {
-            member.balance += total_expense;
+
+// Loop to display the menu and process user input
+    int choice;
+    string name;
+    double amount;
+    do
+    {
+        cout << endl;
+        cout << "What would you like to do?" << endl;
+        cout << "1. Add expenses" << endl;
+        cout << "2. View net balance" << endl;
+        cout << "3. View history" << endl;
+        cout << "4. Exit" << endl;
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter the name of the member who paid the expenses:" << endl;
+            cin >> name;
+            cout << "Enter the amount paid:" << endl;
+            cin >> amount;
+            add_expenses(m, name, amount);
             break;
+
+        case 2:
+            cout << "Enter the name of the member to view net balance:" << endl;
+            cin >> name;
+            net_balance(m, name);
+            break;
+
+        case 3:
+            cout << "Enter the name of the member to view history:" << endl;
+            cin >> name;
+            history(m, name);
+            break;
+
+        case 4:
+            break;
+
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+
+// Function to add a new member to the group
+void add_member(vector<member> &m, string name)
+{
+    // Create a new member and add them to the vector
+    member new_member;
+    new_member.name = name;
+    new_member.expenses = 0;
+    new_member.debt = 0;
+    m.push_back(new_member);
+}
+
+void add_expenses(vector<member> &m, string name, double amount)
+{
+    double per_person_cost = amount / m.size();
+    for (int i = 0; i < m.size(); i++)
+    {
+        if (m[i].name == name)
+        {
+            m[i].expenses += amount;
+            m[i].expenses_history.push_back(amount);
+        }
+        else
+        {
+            m[i].debt += per_person_cost;
+            m[i].debt_history.push_back(per_person_cost);
         }
     }
 }
 
-void calculate_net_balance(vector<Member>& members) {
-    for (Member& member : members) {
-        for (Member& other_member : members) {
-            if (member.name != other_member.name) {
-                double net_balance = member.balance - other_member.balance;
-                if (net_balance > 0) {
-                    cout << member.name << " owes " << other_member.name << " Rs." << net_balance << endl;
-                    member.balance -= net_balance;
-                    other_member.balance += net_balance;
-                }
-                else if (net_balance < 0) {
-                    cout << other_member.name << " owes " << member.name << " Rs." << -net_balance << endl;
-                    member.balance -= net_balance;
-                    other_member.balance += net_balance;
+void net_balance(vector<member> &m, string name)
+{
+    double balance = 0;
+    for (int i = 0; i < m.size(); i++)
+    {
+        if (m[i].name == name)
+        {
+            balance -= m[i].debt;
+        }
+        else
+        {
+            for (int j = 0; j < m[i].debt_history.size(); j++)
+            {
+                if (m[i].debt_history[j] > 0 && m[i].debt_history[j] <= m[i].debt)
+                {
+                    balance += m[i].debt_history[j];
+                    m[i].debt -= m[i].debt_history[j];
                 }
             }
         }
     }
+    cout << "Net balance for " << name << " is " << balance << endl;
 }
 
-int main() {
-    int num_members;
-    cout << "Enter number of members: ";
-    cin >> num_members;
-    vector<Member> members(num_members);
-    for (int i = 0; i < num_members; i++) {
-        cout << "Enter name of member " << i+1 << ": ";
-        cin >> members[i].name;
-        members[i].balance = 0;
-    }
-    cout << "Members list:" << endl;
-    show_members(members);
-
-    int num_expenses;
-    cout << "Enter number of expenses: ";
-    cin >> num_expenses;
-    for (int i = 0; i < num_expenses; i++) {
-        double expense_amount;
-        string payer_name;
-        cout << "Enter amount of expense " << i+1 << ": ";
-        cin >> expense_amount;
-        cout << "Enter name of payer: ";
-        cin >> payer_name;
-        add_expense(members, expense_amount, payer_name);
-        cout << "Expense added." << endl;
-    }
-
-    cout << "Final balances:" << endl;
-    show_members(members);
-
-    cout << "Net balance:" << endl;
-    calculate_net_balance(members);
-
-    return 0;
-}
+ void history(vector<member> & m, string name)
+                    {
+                        for (int i = 0; i < m.size(); i++)
+                        {
+                            if (m[i].name == name)
+                            {
+                                cout << "Expense history for " << name << ":" << endl;
+                                for (int j = 0; j < m[i].expenses_history.size(); j++)
+                                {
+                                    cout << "Expense " << j + 1 << ": " << m[i].expenses_history[j] << endl;
+                                }
+                                cout << endl;
+                                cout << "Debt history for " << name << ":" << endl;
+                                for (int j = 0; j < m[i].debt_history.size(); j++)
+                                {
+                                    cout << "Debt " << j + 1 << ": " << m[i].debt_history[j] << endl;
+                                }
+                                return;
+                            }
+                        }
+                        cout << "Member not found." << endl;
+                    }
