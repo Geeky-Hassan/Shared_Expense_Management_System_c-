@@ -49,23 +49,31 @@ void net_balance(std::vector<member> &m, std::string name, double amount, int nu
     for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
         if (it->name == name) {
             if (it->gbese != 0) {
-                double expenses = it->gbese;
+                double old_expenses = it->expenses;
+                double old_gbese = it->gbese;
+                //double check_gbese = it->gbese;
 
                 double temp = 0;
-                it->gbese -= it->expenses;
+                it->gbese -= old_expenses;
                 if (it->gbese <= 0) {
                     it->gbese = temp;
-                }  
+                }else{
+                    it->gbese = it->gbese;
+                }
 
-                it->expenses -= it->gbese;
-                if (it->expenses > 0) {
-                    double sh = it->expenses / num_member;
+                if (it->gbese > 0) {
+                    return;
+                }
+                
+                old_expenses -= old_gbese;
+                if (old_expenses > 0) {
+                    double sh = old_expenses / num_member;
                     for (int i=0; i<m.size(); i++) {
-                        if (m[i].name != it->name) {
+                        if (m[i].name != name) {
                             m[i].gbese += sh;
                         }
                     }
-                }  
+                }
 
             }
 
@@ -81,7 +89,9 @@ void net_balance(std::vector<member> &m, std::string name, double amount, int nu
 void history(std::vector<member> &m, std::string name) {
     for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
         if (it->name == name){
+            std::cout << it->name << "\n";
             std::cout << it->gbese << "\n";
+            std::cout << it->expenses << "\n";
         }
     }
 }
