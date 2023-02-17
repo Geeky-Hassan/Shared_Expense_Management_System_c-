@@ -2,6 +2,7 @@
 #include <vector>
 #include <cmath>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -57,7 +58,6 @@ void add_members(vector<member> &m) {
         }
 }
 
-
 void add_expenses(vector<member> &m) {
     int num_expenses;
     string payer_name;
@@ -89,26 +89,43 @@ void add_expenses(vector<member> &m) {
                         
                         d_owe[j].member_name = m[j].name;
                         d_owe[j].owe_amount += share;
-                        it->owe.push_back(d_owe[j]);                       
+                        string new_name = d_owe[j].member_name;
+
+                        if (it->owe.empty()) {
+                            it->owe.push_back(d_owe[j]); 
+                        }else {
+                            if (void) {
+
+                            }else{
+                                it->owe.push_back(d_owe[j]);
+                            }
+                        }             
                     }
                 }
             }
         }
     }
 }
-
-
-
-
 void read_user(vector<member> &m, string user) {
+    cout << "=====================================\n";
+    cout << "members owing " << user << ", owing details\n";
+    cout << "=====================================\n";
     cout << "Names" << "     " << "Amount" << "\n";
-     for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
+    
+    for (std::vector<member>::iterator it = m.begin(); it != m.end(); it++) {
         if (it->name == user) {
             int index = it - m.begin();
             for (std::vector<owing>::iterator itr = m[index].owe.begin(); itr != m[index].owe.end(); itr++){
-                cout << "members owing me owing details\n";
                 cout << itr->member_name << "       " << itr->owe_amount << "\n";
+                cout << itr->paying_name << "       " << itr->paying_amount << "\n";
             }
         }
     }
 }
+
+
+/*
+for(int k=0; k<m.size(); k++) {
+                                if (d_owe[j].member_name == it->owe[k].member_name) {
+                                    it->owe[j].owe_amount += share;
+                                    */
