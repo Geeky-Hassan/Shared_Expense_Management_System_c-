@@ -169,3 +169,4 @@ void net_balance(vector<member> &m, string name)
                     }
 
 // When i add second expense of any member.. program is not adding their expense and not even counting that as an expense or subtracting debt from others.
+// you only have to change net balance function. Use 2d array and Graph logic.
