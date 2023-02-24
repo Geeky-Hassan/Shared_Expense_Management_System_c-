@@ -184,3 +184,4 @@ for(int i = 0; i < members.size(); i++) {
         }
     }
 }
+// calculate debt is wrong
