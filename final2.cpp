@@ -58,6 +58,12 @@ void addMember(vector<string>& members, vector<vector<float>>& expenses) {
     vector<float> newExpenses(members.size(), 0);
     expenses.push_back(newExpenses);
 
+    //set the values for the previous rows as new columns are generated
+	for(int i = 0; i < members.size()-1; i++)
+	{
+		expenses[i][members.size()-1] = 0;
+	}
+
     cout << "Member added successfully." << endl;
 }
 
