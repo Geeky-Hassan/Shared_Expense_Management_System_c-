@@ -98,9 +98,11 @@ void addExpense(vector<string>& members, vector<vector<float>>& expenses) {
     float perPersonAmount = amount / members.size();
     for(int i = 0; i < members.size(); i++) {
         if(i == payerIndex) {
-            expenses[payerIndex][i] += perPersonAmount;
+            //expenses[payerIndex][i] += perPersonAmount; //wrong. You can't owe money to yourself
+			continue;
         } else {
-            expenses[i][payerIndex] -= perPersonAmount;
+            expenses[i][payerIndex] -= perPersonAmount; //Person i(row) owes payerIndex(column)
+			expenses[payerIndex][i] += perPersonAmount; //Person payerIndex(row) has to collect from i(column)
         }
     }
 
